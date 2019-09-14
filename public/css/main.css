@@ -42,6 +42,7 @@ form {
 
 .main-header__nav {
   height: 100%;
+  width: 100%;
   display: none;
   align-items: center;
 }
@@ -224,4 +225,8 @@ form {
   #side-menu-toggle {
     display: none;
   }
+}
+
+.align-right {
+  margin-left: auto;
 }
