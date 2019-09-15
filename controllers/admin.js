@@ -52,20 +52,24 @@ exports.postEditProduct = (req, res, next) => {
   const { title, price, description, imageUrl, productId: prodId } = req.body;
   Product.findById(prodId)
     .then(product => {
+      if (product.userId.toString() !== req.user._id.toString()) {
+        return res.redirect('/');
+      }
+
       product.title = title;
       product.price = price;
       product.imageUrl = imageUrl;
       product.description = description;
-      return product.save();
-    })
-    .then(result => {
-      res.redirect('/admin/products');
+      return product.save()
+        .then(result => {
+          res.redirect('/admin/products');
+        });
     })
     .catch(err => console.log(err));
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.find()
+  Product.find({ userId: req.user._id })
     // Can select attributes.
     // .select('title price -_id')
     // Loads nested ref documents and select name.
@@ -83,7 +87,7 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  Product.findByIdAndRemove(prodId)
+  Product.deleteOne({ _id: prodId, userId: req.user._id })
     .then(result => {
       res.redirect('/admin/products');
     })
